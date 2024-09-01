@@ -1,0 +1,4 @@
+
+GET     /                           controllers.HomeController.index()
+
+POST    /rest/api/importShipments   controllers.FileUploadController.importShipments()
