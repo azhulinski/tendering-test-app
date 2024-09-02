@@ -1,10 +1,12 @@
 import org.scalatest.PrivateMethodTester
 import org.scalatest.flatspec.AnyFlatSpec
-import services.FileUploadService
+import services.{CalculationService, FileUploadService}
 
 class CalculationSpec extends AnyFlatSpec with PrivateMethodTester {
 
   val uploadService = new FileUploadService
+
+  val calculationService = new CalculationService
 
   "calculate prices for providers" should "return correct price" in {
 
@@ -38,6 +40,23 @@ class CalculationSpec extends AnyFlatSpec with PrivateMethodTester {
     assertResult(result.head("Provider A"))(priceForBEProviderA)
     assertResult(result.head("Provider B"))(priceForBEProviderB)
     assertResult(result.head("Provider C"))(priceForBEProviderC)
+  }
+
+  "calculate prices for supplier combination" should "return the best price" in {
+    val suppliers = List(
+      Map("Provider A" -> 50, "Provider B" -> 100, "Provider C" -> 50),
+      Map("Provider A" -> 170, "Provider B" -> 190, "Provider C" -> 300),
+      Map("Provider A" -> 650, "Provider B" -> 350, "Provider C" -> 950)
+    )
+
+    val shipments = List(
+      Map("NL" -> "100"),
+      Map("NL" -> "500"),
+      Map("NL" -> "1000")
+    )
+
+    val result = calculationService.calculatePriceForSuppliers(shipments, suppliers)
+    result
   }
 
 }
