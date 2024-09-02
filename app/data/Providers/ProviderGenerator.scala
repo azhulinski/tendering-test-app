@@ -4,6 +4,60 @@ import data.{PricesRange, WeightRange}
 
 object ProviderGenerator {
 
+  def generateAnotherA(): Map[String, Array[Int]] = {
+    val NLPrices = Array.fill(101)(50) ++ Array.fill(150)(110) ++ Array.fill(250)(170) ++ Array.fill(250)(290) ++ Array.fill(250)(650)
+    val BEPrices = Array.fill(101)(75) ++ Array.fill(150)(160) ++ Array.fill(250)(240) ++ Array.fill(250)(480) ++ Array.fill(250)(700)
+    val DEPrices = Array.fill(101)(50) ++ Array.fill(150)(150) ++ Array.fill(250)(440) ++ Array.fill(250)(780) ++ Array.fill(250)(900)
+    Map("NL" -> NLPrices, "BE" -> BEPrices, "DE" -> DEPrices)
+  }
+
+  def generateAnotherB(): Map[String, Array[Int]] = {
+    val NLPrices = Array.fill(251)(100) ++ Array.fill(250)(190) ++ Array.fill(250)(270) ++ Array.fill(250)(350)
+    val BEPrices = Array.fill(251)(150) ++ Array.fill(250)(250) ++ Array.fill(250)(490) ++ Array.fill(250)(650)
+    val DEPrices = Array.fill(251)(100) ++ Array.fill(250)(390) ++ Array.fill(250)(680) ++ Array.fill(250)(790)
+    Map("NL" -> NLPrices, "BE" -> BEPrices, "DE" -> DEPrices)
+  }
+
+  def generateAnotherC(): Map[String, Array[Int]] = {
+    val NLPrices =
+      Array.fill(101)(50) ++
+        Array.fill(100)(80) ++
+        Array.fill(100)(120) ++
+        Array.fill(100)(200) ++
+        Array.fill(100)(300) ++
+        Array.fill(100)(500) ++
+        Array.fill(100)(600) ++
+        Array.fill(100)(800) ++
+        Array.fill(100)(950) ++
+        Array.fill(100)(950)
+
+    val BEPrices =
+      Array.fill(101)(100) ++
+        Array.fill(100)(120) ++
+        Array.fill(100)(300) ++
+        Array.fill(100)(330) ++
+        Array.fill(100)(360) ++
+        Array.fill(100)(390) ++
+        Array.fill(100)(500) ++
+        Array.fill(100)(550) ++
+        Array.fill(100)(600) ++
+        Array.fill(100)(800)
+
+    val DEPrices =
+      Array.fill(101)(40) ++
+        Array.fill(100)(80) ++
+        Array.fill(100)(130) ++
+        Array.fill(100)(400) ++
+        Array.fill(100)(450) ++
+        Array.fill(100)(500) ++
+        Array.fill(100)(550) ++
+        Array.fill(100)(600) ++
+        Array.fill(100)(700) ++
+        Array.fill(100)(850)
+
+    Map("NL" -> NLPrices, "BE" -> BEPrices, "DE" -> DEPrices)
+  }
+
   def generateProviderA(): Map[String, PricesRange] = {
     val NLPrices = PricesRange(Map(
       WeightRange(0, 100) -> 50,
