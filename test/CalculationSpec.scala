@@ -1,10 +1,10 @@
 import org.scalatest.PrivateMethodTester
 import org.scalatest.flatspec.AnyFlatSpec
-import services.{CalculationService, FileUploadService}
+import services.{CalculationService, ShipmentServiceData}
 
 class CalculationSpec extends AnyFlatSpec with PrivateMethodTester {
 
-  val uploadService = new FileUploadService
+  val shipmentService = new ShipmentServiceData
 
   val calculationService = new CalculationService
 
@@ -14,11 +14,9 @@ class CalculationSpec extends AnyFlatSpec with PrivateMethodTester {
     val priceForBEProviderB = "250"
     val priceForBEProviderC = "300"
 
-    val shipments = List(Map("Shipment #" -> 1, "Country" -> "BE", "Weight" -> "300"))
+    val shipments = List(Map("Shipment #" -> "1", "Country" -> "BE", "Weight" -> "300"))
 
-    val calculatePrices = PrivateMethod[List[Map[String, String]]](Symbol("calculatePrices"))
-
-    val result = uploadService.invokePrivate(calculatePrices(shipments))
+    val result = shipmentService.calculatePrices(shipments)
 
     assertResult(result.head("Provider A"))(priceForBEProviderA)
     assertResult(result.head("Provider B"))(priceForBEProviderB)
@@ -31,11 +29,9 @@ class CalculationSpec extends AnyFlatSpec with PrivateMethodTester {
     val priceForBEProviderB = "250"
     val priceForBEProviderC = "300"
 
-    val shipments = List(Map("Shipment #" -> 1, "Country" -> "BE", "Weight" -> "300"))
+    val shipments = List(Map("Shipment #" -> "1", "Country" -> "BE", "Weight" -> "300"))
 
-    val calculatePrices = PrivateMethod[List[Map[String, String]]](Symbol("calculatePricesWithDataModel"))
-
-    val result = uploadService.invokePrivate(calculatePrices(shipments))
+    val result = shipmentService.calculatePrices(shipments)
 
     assertResult(result.head("Provider A"))(priceForBEProviderA)
     assertResult(result.head("Provider B"))(priceForBEProviderB)
