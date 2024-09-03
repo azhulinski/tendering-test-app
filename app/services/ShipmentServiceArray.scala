@@ -2,6 +2,9 @@ package services
 
 import data.Providers.ProviderGenerator
 
+import javax.inject._
+
+@Singleton
 class ShipmentServiceArray extends ShipmentService {
 
   override def calculatePrices(rows: List[Map[String, String]]): List[Map[String, String]] = {

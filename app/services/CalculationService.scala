@@ -33,7 +33,8 @@ class CalculationService {
         }
         totalCost += minShipmentCost
       }
-      s"best suppliers pair for the shipment ${bestSuppliersPair.toString} with the minimal shipment cost for $minShipmentCost, minimal price for one shipment: $minSupplierPrice"
+
+      (bestSuppliersPair, minShipmentCost, minSupplierPrice)
     }
   }
 }

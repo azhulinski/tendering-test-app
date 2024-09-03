@@ -1,10 +1,13 @@
 import org.scalatest.PrivateMethodTester
 import org.scalatest.flatspec.AnyFlatSpec
-import services.{CalculationService, ShipmentServiceData}
+import services.{CalculationService, FileUploadService, ShipmentServiceArray, ShipmentServiceData}
 
 class CalculationSpec extends AnyFlatSpec with PrivateMethodTester {
 
   val shipmentService = new ShipmentServiceData
+  val shipmentServiceArray = new ShipmentServiceArray
+
+  val fileUploadService = new FileUploadService(shipmentService)
 
   val calculationService = new CalculationService
 
@@ -31,11 +34,21 @@ class CalculationSpec extends AnyFlatSpec with PrivateMethodTester {
 
     val shipments = List(Map("Shipment #" -> "1", "Country" -> "BE", "Weight" -> "300"))
 
-    val result = shipmentService.calculatePrices(shipments)
+    val result = shipmentServiceArray.calculatePrices(shipments)
 
     assertResult(result.head("Provider A"))(priceForBEProviderA)
     assertResult(result.head("Provider B"))(priceForBEProviderB)
     assertResult(result.head("Provider C"))(priceForBEProviderC)
+  }
+
+  "file upload" should "decode input data and add three Providers" in {
+    val content = "U2hpcG1lbnQgIyxDb3VudHJ5LFdlaWdodA0KMSxOTCwxMDANCjIsQkUsMzAwDQozLERFLDUwMA0K"
+
+    val result = fileUploadService.calculatePrices(content)
+
+    assertResult(result.rows.length)(3)
+    assertResult(result.columns.length)(6)
+    assertResult(result.rows.head("Country"))("NL")
   }
 
   "calculate prices for supplier combination" should "return the best price" in {
@@ -45,6 +58,10 @@ class CalculationSpec extends AnyFlatSpec with PrivateMethodTester {
       Map("Provider A" -> 650, "Provider B" -> 350, "Provider C" -> 950)
     )
 
+    val bestPrices = List(50, 170, 350)
+
+    val bestCosts = List(100, 360, 1000)
+
     val shipments = List(
       Map("NL" -> "100"),
       Map("NL" -> "500"),
@@ -52,7 +69,9 @@ class CalculationSpec extends AnyFlatSpec with PrivateMethodTester {
     )
 
     val result = calculationService.calculatePriceForSuppliers(shipments, suppliers)
-    result
+
+    result.zipWithIndex.foreach { case (value, index) => assertResult(value._2)(bestCosts(index)) }
+    result.zipWithIndex.foreach { case (value, index) => assertResult(value._3)(bestPrices(index)) }
   }
 
 }

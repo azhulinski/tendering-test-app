@@ -7,7 +7,7 @@ import java.util.Base64
 import javax.inject.Inject
 import scala.io.Source
 
-class FileUploadService @Inject()(shipmentService: ShipmentServiceData) {
+class FileUploadService @Inject()(shipmentService: ShipmentService) {
 
   def calculatePrices(content: String): Grid = {
     uploadFile(content)
