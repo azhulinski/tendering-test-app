@@ -1,11 +1,13 @@
+import dao.ProvidersDAO
 import org.scalatest.PrivateMethodTester
 import org.scalatest.flatspec.AnyFlatSpec
 import services.{CalculationService, FileUploadService, ShipmentServiceArray, ShipmentServiceData}
 
 class CalculationSpec extends AnyFlatSpec with PrivateMethodTester {
 
-  val shipmentService = new ShipmentServiceData
-  val shipmentServiceArray = new ShipmentServiceArray
+  val providersDAO = new ProvidersDAO
+  val shipmentService = new ShipmentServiceData(providersDAO)
+  val shipmentServiceArray = new ShipmentServiceArray(providersDAO)
 
   val fileUploadService = new FileUploadService(shipmentService)
 

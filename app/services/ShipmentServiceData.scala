@@ -1,17 +1,17 @@
 package services
 
-import data.Providers.ProviderGenerator
+import dao.ProvidersDAO
 import data.WeightRange
 
 import javax.inject._
 
 @Singleton
-class ShipmentServiceData extends ShipmentService {
+class ShipmentServiceData @Inject()(val providersDAO: ProvidersDAO) extends ShipmentService {
 
   override def calculatePrices(rows: List[Map[String, String]]): List[Map[String, String]] = {
-    val pricesA = ProviderGenerator.generateProviderA()
-    val pricesB = ProviderGenerator.generateProviderB()
-    val pricesC = ProviderGenerator.generateProviderC()
+    val pricesA = providersDAO.getProviderA
+    val pricesB = providersDAO.getProviderB
+    val pricesC = providersDAO.getProviderC
 
     rows.flatMap(singleRow => {
       pricesA(singleRow("Country")).prices.collect {
