@@ -2,39 +2,42 @@ package services
 
 class CalculationService {
 
-  def calculatePriceForSuppliers(shipments: List[Map[String, String]], suppliersPrices: List[Map[String, Int]]) = {
+  def bestSupplier(prices: Map[String, Int]): (String, Int) = {
+    prices.minBy(_._2)
+  }
 
-    suppliersPrices.map { suppliers =>
+  def bestTwoSupplierCombination(prices: Map[String, Int]): (Seq[String], Int) = {
+    prices
+      .toSeq
+      .combinations(2)
+      .map { combination =>
+        val supplierNames = combination.map(_._1)
+        val totalCombinationPrice = combination.map(_._2).sum
 
-      var bestSuppliersPair = List.empty[(String, Int)]
-
-      var minShipmentCost = Int.MaxValue
-      var minSupplierPrice = Int.MaxValue
-
-      var totalCost = 0
-
-      val supplierPairsCombinations = suppliers.toList.combinations(2).toList :+ suppliers.toList
-      var minCostForShipment = 0
-      supplierPairsCombinations.foreach { combination =>
-
-        minCostForShipment = combination.map(_._2).min
-
-        val priceFromCombination = combination.unzip match {
-          case (_, price) => price.sum
-        }
-
-        if (minCostForShipment < minSupplierPrice) {
-          minSupplierPrice = minCostForShipment
-        }
-
-        if (priceFromCombination < minShipmentCost) {
-          minShipmentCost = priceFromCombination
-          bestSuppliersPair = combination
-        }
-        totalCost += minShipmentCost
+        supplierNames -> totalCombinationPrice
       }
+      .minBy(_._2)
+  }
 
-      (bestSuppliersPair, minShipmentCost, minSupplierPrice)
-    }
+  def threeSupplierCombination(prices: Map[String, Int]): (Seq[String], Int) = {
+    prices.keys.toSeq -> prices.values.sum
+  }
+
+  def calculatePriceForSuppliers(
+    shipments: List[Map[String, String]],
+    suppliersPrices: List[Map[String, Int]]
+  ): List[(Seq[String], Int, Int)] = {
+    shipments
+      .zip(suppliersPrices)
+      .map { case (_, prices) =>
+        val bestCombination = bestTwoSupplierCombination(prices)
+        val bestShipmentPrice = bestSupplier(prices)
+
+        (
+          bestCombination._1,
+          bestCombination._2,
+          bestShipmentPrice._2
+        )
+      }
   }
 }

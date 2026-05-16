@@ -1,7 +1,7 @@
 package services
 
 import dao.ProvidersDAO
-import data.WeightRange
+import data.{PricesRange, WeightRange}
 
 import javax.inject._
 
@@ -13,21 +13,37 @@ class ShipmentServiceData @Inject()(providersDAO: ProvidersDAO) extends Shipment
     val pricesB = providersDAO.getProviderB
     val pricesC = providersDAO.getProviderC
 
-    for {
-      singleRow <- rows
-      pricesA <- pricesA(singleRow("Country")).prices.collect {
-        case (range@WeightRange(_: Int, _: Int), price) if range.contains(singleRow("Weight").toInt) =>
-          singleRow + ("Provider A" -> price.toString)
-      }
-      pricesB <- pricesB(singleRow("Country")).prices.collect {
-        case (range@WeightRange(_: Int, _: Int), price) if range.contains(singleRow("Weight").toInt) =>
-          pricesA + ("Provider B" -> price.toString)
-      }
-      pricesC <- pricesC(singleRow("Country")).prices.collect {
-        case (range@WeightRange(_: Int, _: Int), price) if range.contains(singleRow("Weight").toInt) =>
-          pricesB + ("Provider C" -> price.toString)
-      }
-    } yield pricesC
+    rows.map { singleRow =>
+      val country = singleRow("Country")
+      val weight = singleRow("Weight").toInt
 
+      val providerAPrice = priceFor(pricesA(country), weight)
+      val providerBPrice = priceFor(pricesB(country), weight)
+      val providerCPrice = priceFor(pricesC(country), weight)
+
+      val providerPrices = Map(
+        "Provider A" -> providerAPrice,
+        "Provider B" -> providerBPrice,
+        "Provider C" -> providerCPrice
+      )
+
+      val bestProvider = providerPrices.minBy(_._2)
+
+      singleRow ++ Map(
+        "Provider A" -> providerAPrice.toString,
+        "Provider B" -> providerBPrice.toString,
+        "Provider C" -> providerCPrice.toString,
+        "Best Provider" -> bestProvider._1,
+        "Best Price" -> bestProvider._2.toString
+      )
+    }
+  }
+
+  private def priceFor(pricesRange: PricesRange, weight: Int): Int = {
+    pricesRange.prices.collectFirst {
+      case (range @ WeightRange(_, _), price) if range.contains(weight) => price
+    }.getOrElse {
+      throw new IllegalArgumentException(s"No provider price found for weight [$weight]")
+    }
   }
 }

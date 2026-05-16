@@ -9,9 +9,8 @@ class CalculationSpec extends AnyFlatSpec with PrivateMethodTester {
   val shipmentService = new ShipmentServiceData(providersDAO)
   val shipmentServiceArray = new ShipmentServiceArray(providersDAO)
 
-  val fileUploadService = new FileUploadService(shipmentService)
-
   val calculationService = new CalculationService
+  val fileUploadService = new FileUploadService(shipmentService, calculationService)
 
   "calculate prices for providers" should "return correct price" in {
 
@@ -43,14 +42,22 @@ class CalculationSpec extends AnyFlatSpec with PrivateMethodTester {
     assertResult(result.head("Provider C"))(priceForBEProviderC)
   }
 
-  "file upload" should "decode input data and add three Providers" in {
+  "file upload" should "decode input data and add providers and optimizations" in {
     val content = "U2hpcG1lbnQgIyxDb3VudHJ5LFdlaWdodA0KMSxOTCwxMDANCjIsQkUsMzAwDQozLERFLDUwMA0K"
 
     val result = fileUploadService.calculatePrices(content)
 
     assertResult(result.rows.length)(3)
-    assertResult(result.columns.length)(6)
+    assertResult(result.columns.length)(12)
     assertResult(result.rows.head("Country"))("NL")
+    assertResult(result.rows.head.contains("Best Provider"))(true)
+    assertResult(result.rows.head.contains("Best Price"))(true)
+    assertResult(result.rows.head.contains("Best 2-Suppliers"))(true)
+    assertResult(result.rows.head.contains("Best 2-Price"))(true)
+    assertResult(result.rows.head.contains("Best 3-Suppliers"))(true)
+    assertResult(result.rows.head.contains("Best 3-Price"))(true)
+    assertResult(result.countrySummary.nonEmpty)(true)
+    assertResult(result.cherryPickSummary.nonEmpty)(true)
   }
 
   "calculate prices for supplier combination" should "return the best price" in {
